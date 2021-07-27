@@ -3,11 +3,17 @@
     <v-content class="background-color">
       <v-container class="fill-height">
         <v-row align="center" justify="center">
-          <v-col cols="12" sm="10" md="8" lg="4">
-            <v-card class="elevation-24 pa-4">
+          <v-col cols="4">
+            <div class="title display-10">
+              <h1>Açık iş ve staj imkanlarını bulun</h1>
+            </div>
+          </v-col>
+
+          <v-col cols="6" offset="1" lg="4">
+            <v-card class="text-center mt-12" shaped elevation="10">
               <v-window v-model="step">
                 <v-window-item :value="1">
-                  <div class="text-right mt-2 pr-10">
+                  <div class="text-right mt-4 pr-10">
                     <v-icon color="#02c3bd" dense left>
                       mdi-account-key
                     </v-icon>
@@ -16,12 +22,13 @@
 
                   <!-- <v-divider class="mx-4"></v-divider> -->
 
-                  <h1 class="text-center darken-3--text text--lighten-2 mt-8">
+                  <h2 class="text-center darken-3--text text--lighten-2 mt-10">
                     VO1D
-                  </h1>
-                  <v-card-text class="mt-18 pl-10 pr-10">
+                  </h2>
+                  <v-card-text class="pa-14">
                     <v-form>
                       <v-text-field
+                        v-model="user.userName"
                         label="E-posta adresi"
                         name="Email"
                         prepend-inner-icon="email"
@@ -31,6 +38,7 @@
                         class="rounded-0"
                       />
                       <v-text-field
+                        v-model="user.userPassword"
                         id="password"
                         label="Şifre"
                         name="password"
@@ -66,7 +74,7 @@
                     <v-col>
                       <v-card-text class="black--text mt-18 pl-10 pr-10">
                         <v-card-text>
-                          <h1
+                          <h2
                             class="
                               text-center
                               black--text
@@ -75,10 +83,11 @@
                             "
                           >
                             HESAP OLUŞTUR
-                          </h1>
+                          </h2>
 
-                          <v-form>
+                          <v-form @submit.prevent="onSubmit">
                             <v-text-field
+                              v-model="user.name"
                               label="İsim"
                               name="Name"
                               prepend-inner-icon="person"
@@ -88,6 +97,7 @@
                               class="rounded-0"
                             />
                             <v-text-field
+                              v-model="user.surname"
                               label="Soyisim"
                               name="SurName"
                               prepend-inner-icon="person"
@@ -97,6 +107,7 @@
                               class="rounded-0"
                             />
                             <v-text-field
+                              v-model="user.email"
                               label="E-posta Adresi"
                               name="Email"
                               prepend-inner-icon="email"
@@ -107,6 +118,7 @@
                             />
 
                             <v-text-field
+                              v-model="user.password"
                               id="password"
                               label="Şifre"
                               name="password"
@@ -135,8 +147,13 @@
                                 >BACK
                               </v-btn>
                               <v-spacer />
-                              <v-btn color="#02c3bd" dark large>KAYIT OL</v-btn>
+                              <v-btn type="submit" color="#02c3bd" dark large
+                                >KAYIT OL</v-btn
+                              >
                             </v-card-actions>
+                            <div v-if="submitted" class="mt-4">
+                              <h3>Kaydınız başarıyla gerçekleştirildi.</h3>
+                            </div>
                           </v-form>
                         </v-card-text>
                       </v-card-text>
@@ -153,11 +170,33 @@
 </template>
 
 <script>
+import endpoint from "@/lib/api";
 export default {
-  data: () => ({
-    step: 1,
-    showPassword: false,
-  }),
+  data: () => {
+    return {
+      user: {
+        name: "",
+        surname: "",
+        password: "",
+        email: "",
+      },
+      step: 1,
+      showPassword: false,
+      submitted: false,
+    };
+  },
+  methods: {
+    onSubmit() {
+      this.$axios
+        .post(endpoint.auth.register, this.user)
+        .then((response) => {
+          console.log(response);
+          this.user = {};
+          this.submitted = "true";
+        })
+        .catch((e) => console.log(e));
+    },
+  },
 };
 </script>
 
@@ -168,5 +207,16 @@ export default {
 
 a:hover {
   font-size: 18px;
+}
+
+h1 {
+  text-align: left;
+  color: white;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  line-height: 50px;
+  font-size: 50px;
+}
+h2 {
+  font-size: 30px;
 }
 </style>
